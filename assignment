@@ -1,0 +1,56 @@
+__winc_id__ = "ae539110d03e49ea8738fd413ac44ba8"
+__human_name__ = "files"
+import os
+import zipfile
+import glob
+current_dir = os.getcwd()
+path = f'{current_dir}/cache'
+
+
+def clean_cache():
+    files = glob.glob(f'{path}/*')
+    if not os.path.exists(path):
+        os.mkdir(path)        
+    else:
+        for f in files:
+            os.remove(f)
+
+
+def cache_zip(zip_file_path, cache_dir_path):
+    if not os.path.isdir(cache_dir_path):
+        os.mkdir(cache_dir_path)
+    if zipfile.is_zipfile(zip_file_path):
+        with zipfile.ZipFile(zip_file_path, 'r') as archive:
+            archive.extractall(cache_dir_path)
+    else:
+        print("File is not a zip file")
+    
+       
+def cached_files():
+    only_files_abs = []
+    all_in_cache = os.listdir(path) 
+    for item in all_in_cache:
+        item_path = os.path.join(path, item)
+        if os.path.isfile(item_path):
+            only_files_abs.append(item_path)
+    return only_files_abs
+        
+def find_password(list_of_file_paths):
+    password = ""
+    for file in list_of_file_paths:
+        f = open(file, "r")
+        for x in f:
+            if "password" in x:
+                password = x[10:(len(x))-1]
+                print(f)
+                break
+        f.close()
+    return password
+
+
+
+
+clean_cache()
+path = os.path.abspath("files/cache")
+cache_zip("./files/data.zip", path)
+print(find_password(cached_files()))
